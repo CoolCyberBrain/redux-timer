@@ -1,3 +1,5 @@
+var accurateInterval = require('accurate-interval');
+
 export const START_TIMER = 'START_TIMER';
 export const STOP_TIMER = 'STOP_TIMER';
 const timers = {};
@@ -41,24 +43,24 @@ const startTimer = (
 
   // clear timer if already started
   if (timers[name]) {
-    clearInterval(timers[name]);
+    timers[name].clear();
   }
 
   const func =
     typeof action === 'string' ? () => dispatch({ type: action }) : action;
 
   // run immediately
-  if (runImmediately) func();
+  // if (runImmediately) func();
 
   // create the setInterval
-  timers[name] = setInterval(func, interval);
+  timers[name] = accurateInterval(func, interval, {aligned: true, immediate: runImmediately});
 };
 
 const stopTimer = ({ name }) => {
   validateTimerName(name);
 
   if (timers[name]) {
-    clearInterval(timers[name]);
+    timers[name].clear();
   }
 };
 
